@@ -1,0 +1,23 @@
+[gd_resource type="SpatialMaterial" load_steps=4 format=2]
+
+[ext_resource path="res://Resources/Sprites/Textures/grass.png" type="Texture" id=1]
+
+[sub_resource type="OpenSimplexNoise" id=1]
+period = 3.6
+persistence = 0.0
+
+[sub_resource type="NoiseTexture" id=2]
+flags = 3
+width = 32
+height = 32
+seamless = true
+noise = SubResource( 1 )
+
+[resource]
+albedo_color = Color( 0.635294, 0.854902, 0.482353, 1 )
+detail_enabled = true
+detail_mask = SubResource( 2 )
+detail_blend_mode = 0
+detail_uv_layer = 0
+detail_albedo = ExtResource( 1 )
+uv1_scale = Vector3( 10, 10, 10 )
