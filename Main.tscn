@@ -1,10 +1,14 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Blender Files/floor.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Character.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/Camera.gd" type="Script" id=3]
 [ext_resource path="res://Scripts/Controller_UI.gd" type="Script" id=4]
 [ext_resource path="res://Scenes/FloorPreview.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Blender Files/trees.tres" type="MeshLibrary" id=6]
+
+[sub_resource type="SphereShape" id=1]
+radius = 2.22451
 
 [node name="Spatial" type="Spatial"]
 
@@ -12,10 +16,11 @@
 
 [node name="Character" parent="." instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.961382, 0 )
-custom_integrator = true
+contact_monitor = true
+can_sleep = false
 
 [node name="Camera" type="Camera" parent="Character"]
-transform = Transform( 1, 0, 0, 0, 0.34202, 0.939693, 0, -0.939693, 0.34202, 0, 18, 7 )
+transform = Transform( 1, 0, 0, 0, 0.34202, 0.939693, 0, -0.939693, 0.34202, 0, 16.416, 7.212 )
 script = ExtResource( 3 )
 
 [node name="Controller" type="Node" parent="."]
@@ -24,5 +29,65 @@ script = ExtResource( 4 )
 [node name="FloorPreview" parent="." instance=ExtResource( 5 )]
 editor/display_folded = true
 transform = Transform( 0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0 )
+
+[node name="ball" type="RigidBody" parent="."]
+editor/display_folded = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.96826, 6.54517, 0 )
+collision_layer = 1024
+collision_mask = 1024
+
+[node name="CollisionShape" type="CollisionShape" parent="ball"]
+shape = SubResource( 1 )
+
+[node name="CSGSphere" type="CSGSphere" parent="ball"]
+radius = 1.971
+
+[node name="ball2" type="RigidBody" parent="."]
+editor/display_folded = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5.67346, 6.54517, 0 )
+collision_layer = 1024
+collision_mask = 1024
+
+[node name="CollisionShape" type="CollisionShape" parent="ball2"]
+shape = SubResource( 1 )
+
+[node name="CSGSphere" type="CSGSphere" parent="ball2"]
+radius = 1.971
+
+[node name="ball3" type="RigidBody" parent="."]
+editor/display_folded = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.987549, 6.54517, 11.9109 )
+collision_layer = 1024
+collision_mask = 1024
+
+[node name="CollisionShape" type="CollisionShape" parent="ball3"]
+shape = SubResource( 1 )
+
+[node name="CSGSphere" type="CSGSphere" parent="ball3"]
+radius = 1.971
+
+[node name="ball4" type="RigidBody" parent="."]
+editor/display_folded = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25159, 6.54517, -5.22437 )
+collision_layer = 1024
+collision_mask = 1024
+
+[node name="CollisionShape" type="CollisionShape" parent="ball4"]
+shape = SubResource( 1 )
+
+[node name="CSGSphere" type="CSGSphere" parent="ball4"]
+radius = 1.971
+
+[node name="GridMap" type="GridMap" parent="."]
+mesh_library = ExtResource( 6 )
+cell_center_y = false
+collision_layer = 1024
+collision_mask = 0
+data = {
+"cells": PoolIntArray( 2, 0, 1048576, 3, 0, 1048576, 5, 0, 1048577, 65529, 0, 1048576, 65530, 0, 1048576, 65533, 0, 537919488, 3, 1, 1048576, 65529, 1, 1048576, 65530, 1, 1048576, 65533, 1, 1048576, 3, 2, 1048576, 65530, 2, 1048576, 65533, 2, 1048576, 65534, 2, 1048576, 3, 3, 1048576, 65530, 3, 1048576, 65534, 3, 1048576, 0, 4, 1048576, 3, 4, 1048576, 65535, 4, 1048576, 0, 5, 537919488, 1, 5, 537919488, 2, 5, 537919488, 3, 5, 537919488, 0, 65531, 537919488, 65530, 65531, 1048576, 65534, 65531, 537919488, 65535, 65531, 537919488, 3, 65532, 537919488, 5, 65532, 537919489, 65530, 65532, 537919488, 65534, 65532, 1074790400, 6, 65533, 537919489, 65529, 65533, 537919488, 65530, 65533, 1074790400, 65533, 65533, -1609564160, 6, 65534, 1048577, 65529, 65534, 1048576, 65530, 65534, 1048576, 65533, 65534, 1048576, 5, 65535, 537919489, 6, 65535, 537919489, 65529, 65535, 1048576, 65530, 65535, 1048576, 65533, 65535, 1048576 )
+}
+__meta__ = {
+"_editor_clip_": 0
+}
 
 [editable path="FloorPreview"]

@@ -12,8 +12,7 @@ func _physics_process(delta):
 		var from = camera.project_position( get_viewport().get_mouse_position() )
 		var ray_direction = camera.project_ray_normal( get_viewport().get_mouse_position() ).normalized()
 		var to = from + ray_direction*100
-		var result = direct_space_state.intersect_ray( from , to , [] ,
-		 1024 , true , false )
+		var result = direct_space_state.intersect_ray( from , to , [] , 1024 , true , false )
 		if( not result.empty() ):
 			var floor_prev = get_parent().get_node("FloorPreview")
 			floor_prev.translation.x = result.position.x
