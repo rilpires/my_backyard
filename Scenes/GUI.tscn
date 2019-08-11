@@ -12,14 +12,12 @@ width = 64
 [node name="GUI" type="CanvasLayer"]
 
 [node name="3DViewport" type="ViewportContainer" parent="."]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 stretch = true
 stretch_shrink = 2
 
 [node name="Viewport" type="Viewport" parent="3DViewport"]
-editor/display_folded = true
 size = Vector2( 512, 300 )
 handle_input_locally = false
 render_target_update_mode = 3
