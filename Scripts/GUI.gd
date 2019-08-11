@@ -7,6 +7,7 @@ func _ready():
 	GameContext.gui = self
 
 func setHovered( obj ):
+	return
 	current_hovered = obj
 	if( obj ):
 		$Control/MousePosition.showPanel( obj.name )
