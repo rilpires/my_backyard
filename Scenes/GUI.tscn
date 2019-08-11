@@ -1,6 +1,18 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://Main.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scripts/GUI.gd" type="Script" id=1]
+[ext_resource path="res://Main.tscn" type="PackedScene" id=2]
+
+[sub_resource type="GDScript" id=10]
+script/source = "extends Viewport
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = \"text\"
+
+# Called when the node enters the scene tree for the first time.
+func get_local_mouse_position():
+	return get_mouse_position()/get_parent().stretch_shrink"
 
 [sub_resource type="Gradient" id=1]
 colors = PoolColorArray( 0.438354, 0.479613, 0.667969, 1, 0.267792, 0.31092, 0.507813, 1 )
@@ -9,7 +21,66 @@ colors = PoolColorArray( 0.438354, 0.479613, 0.667969, 1, 0.267792, 0.31092, 0.5
 gradient = SubResource( 1 )
 width = 64
 
+[sub_resource type="GDScript" id=7]
+script/source = "extends Label
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	connect(\"resized\",self,\"_resized\",[],CONNECT_DEFERRED)
+	_resized()
+
+func _resized():
+	get_parent().rect_size.x = rect_size.x + 20
+	get_parent().rect_min_size.x = get_parent().rect_size.x
+"
+
+[sub_resource type="GDScript" id=8]
+script/source = "extends Node2D
+
+func _physics_process(delta):
+	position = get_viewport().get_mouse_position()
+
+func showPanel( message ):
+	show()
+	$\"9PatchRect/Label\".text = \"\"
+	$\"9PatchRect/Label\".rect_size = Vector2(118,0)
+	$\"9PatchRect/Label\".text = message
+	$\"9PatchRect\".rect_size = $\"9PatchRect/Label\".rect_size + Vector2(10,10)
+	$\"9PatchRect/AnimationPlayer\".play(\"open\")
+
+func closePanel():
+	hide()"
+
+[sub_resource type="GDScript" id=9]
+script/source = "tool
+extends NinePatchRect
+
+export (int) var y_gap = 10
+
+func _ready():
+	connect(\"resized\",self,\"_resized\")
+
+func _resized():
+	rect_position.y = - rect_size.y - y_gap
+	rect_pivot_offset = Vector2( rect_size.x*0.5 , rect_size.y )
+"
+
+[sub_resource type="Animation" id=6]
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.99474 ),
+"transitions": PoolRealArray( 0.0412347, 1 ),
+"update": 0,
+"values": [ Vector2( 1, 0 ), Vector2( 1, 1 ) ]
+}
+
 [node name="GUI" type="CanvasLayer"]
+script = ExtResource( 1 )
 
 [node name="3DViewport" type="ViewportContainer" parent="."]
 anchor_right = 1.0
@@ -21,28 +92,29 @@ stretch_shrink = 2
 size = Vector2( 512, 300 )
 handle_input_locally = false
 render_target_update_mode = 3
+script = SubResource( 10 )
 
-[node name="MainWorld" parent="3DViewport/Viewport" instance=ExtResource( 1 )]
+[node name="MainWorld" parent="3DViewport/Viewport" instance=ExtResource( 2 )]
 
 [node name="Control" type="Control" parent="."]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
-margin_right = 142.0
-margin_bottom = 197.0
-mouse_filter = 2
-custom_constants/separation = -1
-
-[node name="Name" type="NinePatchRect" parent="Control/VBoxContainer"]
+[node name="TopHBoxContainer" type="HBoxContainer" parent="Control"]
 editor/display_folded = true
-margin_right = 142.0
+anchor_right = 1.0
 margin_bottom = 32.0
-rect_min_size = Vector2( 0, 32 )
+mouse_filter = 2
+custom_constants/separation = 0
+
+[node name="Name" type="NinePatchRect" parent="Control/TopHBoxContainer"]
+margin_right = 128.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 128, 32 )
 mouse_filter = 0
-size_flags_horizontal = 3
+size_flags_horizontal = 0
+size_flags_stretch_ratio = 0.2
 texture = SubResource( 2 )
 draw_center = false
 patch_margin_left = 2
@@ -50,18 +122,92 @@ patch_margin_top = 2
 patch_margin_right = 2
 patch_margin_bottom = 2
 
-[node name="BG" type="ColorRect" parent="Control/VBoxContainer/Name"]
+[node name="BG" type="ColorRect" parent="Control/TopHBoxContainer/Name"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color( 0.101961, 0.101961, 0.101961, 1 )
 
-[node name="Label" type="Label" parent="Control/VBoxContainer/Name"]
+[node name="Label" type="Label" parent="Control/TopHBoxContainer/Name"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 10.0
+margin_top = -15.0
+margin_right = 115.0
+margin_bottom = 16.0
+text = "Name: Romeua"
+valign = 1
+script = SubResource( 7 )
+
+[node name="Position" type="NinePatchRect" parent="Control/TopHBoxContainer"]
+margin_left = 128.0
+margin_right = 256.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 128, 32 )
+mouse_filter = 0
+size_flags_horizontal = 0
+texture = SubResource( 2 )
+draw_center = false
+patch_margin_left = 2
+patch_margin_top = 2
+patch_margin_right = 2
+patch_margin_bottom = 2
+
+[node name="BG" type="ColorRect" parent="Control/TopHBoxContainer/Position"]
+show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+color = Color( 0.101961, 0.101961, 0.101961, 1 )
+
+[node name="Label" type="Label" parent="Control/TopHBoxContainer/Position"]
+anchor_top = 0.5
+anchor_bottom = 0.5
 margin_left = 10.0
-margin_top = 3.0
-margin_right = -3.0
-margin_bottom = -3.0
-text = "Name: Romeu"
+margin_top = -13.0
+margin_right = 115.0
+margin_bottom = 13.0
+text = "Position: (21,34)"
 valign = 1
+script = SubResource( 7 )
+
+[node name="MousePosition" type="Position2D" parent="Control"]
+position = Vector2( 701.266, 275.706 )
+script = SubResource( 8 )
+
+[node name="9PatchRect" type="NinePatchRect" parent="Control/MousePosition"]
+show_behind_parent = true
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -64.0
+margin_top = -39.0
+margin_right = 1.0
+margin_bottom = -10.0
+rect_pivot_offset = Vector2( 32.5, 29 )
+texture = SubResource( 2 )
+draw_center = false
+patch_margin_left = 2
+patch_margin_top = 2
+patch_margin_right = 2
+patch_margin_bottom = 2
+script = SubResource( 9 )
+
+[node name="ColorRect" type="ColorRect" parent="Control/MousePosition/9PatchRect"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="Label" type="Label" parent="Control/MousePosition/9PatchRect"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 49.0
+margin_bottom = 36.0
+text = "GridMap"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Control/MousePosition/9PatchRect"]
+anims/open = SubResource( 6 )

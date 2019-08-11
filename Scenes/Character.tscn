@@ -6,7 +6,9 @@
 [sub_resource type="BoxShape" id=1]
 extents = Vector3( 1, 1.707, 1 )
 
-[node name="Character" type="RigidBody"]
+[node name="Character" type="RigidBody" groups=[
+"Character",
+]]
 collision_mask = 1024
 mode = 2
 script = ExtResource( 1 )

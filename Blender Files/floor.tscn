@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Resources/Materials/TreeLeaf.tres" type="Material" id=1]
 
-[sub_resource type="BoxShape" id=3]
+[sub_resource type="BoxShape" id=1]
 extents = Vector3( 17, 0.1, 17 )
 
 [sub_resource type="ArrayMesh" id=2]
@@ -18,12 +18,12 @@ surfaces/0 = {
 "vertex_count": 4
 }
 
-[node name="StaticBody" type="StaticBody"]
+[node name="Floor" type="StaticBody"]
 collision_layer = 1024
 collision_mask = 0
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
-shape = SubResource( 3 )
+shape = SubResource( 1 )
 
 [node name="Plane" type="MeshInstance" parent="."]
 mesh = SubResource( 2 )
