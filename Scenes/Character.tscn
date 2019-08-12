@@ -20,6 +20,7 @@ shape = SubResource( 1 )
 [node name="Model" parent="." instance=ExtResource( 2 )]
 
 [node name="AnimationPlayer" parent="Model/Armature" index="0"]
+autoplay = "Standing"
 playback_default_blend_time = 0.15
 
 [editable path="Model"]

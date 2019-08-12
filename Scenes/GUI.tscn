@@ -1,21 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Scripts/GUI.gd" type="Script" id=1]
-[ext_resource path="res://Main.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Scenes/LabelBox.scn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/LabelBox.scn" type="PackedScene" id=2]
+[ext_resource path="res://Scripts/Chat.gd" type="Script" id=3]
 
 [sub_resource type="GDScript" id=1]
-script/source = "extends Viewport
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = \"text\"
-
-# Called when the node enters the scene tree for the first time.
-func get_local_mouse_position():
-	return get_mouse_position()/get_parent().stretch_shrink"
-
-[sub_resource type="GDScript" id=2]
 script/source = "extends Node2D
 
 func _physics_process(delta):
@@ -28,7 +17,7 @@ func showPanel( message ):
 func closePanel():
 	hide()"
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=2]
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:rect_scale")
 tracks/0/interp = 1
@@ -42,99 +31,138 @@ tracks/0/keys = {
 "values": [ Vector2( 1, 0 ), Vector2( 1, 1 ) ]
 }
 
-[node name="GUI" type="CanvasLayer"]
-script = ExtResource( 1 )
+[sub_resource type="Gradient" id=3]
+colors = PoolColorArray( 0.611023, 0.624836, 0.832031, 1, 0.336563, 0.35363, 0.535156, 1 )
 
-[node name="3DViewport" type="ViewportContainer" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-stretch = true
-stretch_shrink = 2
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+width = 32
 
-[node name="Viewport" type="Viewport" parent="3DViewport"]
-size = Vector2( 512, 300 )
-handle_input_locally = false
-render_target_update_mode = 3
-script = SubResource( 1 )
-
-[node name="MainWorld" parent="3DViewport/Viewport" instance=ExtResource( 2 )]
-
-[node name="AllViewport" type="Control" parent="."]
+[node name="GUI" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+script = ExtResource( 1 )
 
-[node name="MousePosition" type="Position2D" parent="AllViewport"]
+[node name="MousePosition" type="Position2D" parent="."]
 position = Vector2( 701.266, 275.706 )
-script = SubResource( 2 )
+script = SubResource( 1 )
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="AllViewport/MousePosition"]
-anims/open = SubResource( 3 )
+[node name="AnimationPlayer" type="AnimationPlayer" parent="MousePosition"]
+anims/open = SubResource( 2 )
 
-[node name="LabelBox" parent="AllViewport/MousePosition" instance=ExtResource( 3 )]
+[node name="LabelBox" parent="MousePosition" instance=ExtResource( 2 )]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -90.0
-margin_top = -65.1095
+margin_top = -48.0
 margin_right = 90.0
-margin_bottom = -24.1095
-rect_min_size = Vector2( 180, 41 )
-rect_pivot_offset = Vector2( 90, 20.5 )
+margin_bottom = -24.0
+rect_min_size = Vector2( 180, 24 )
+rect_pivot_offset = Vector2( 90, 12 )
 rect_clip_content = true
+texture = SubResource( 4 )
 region_rect = Rect2( 303, 135, 0, 0 )
-text = "por favor da certo caralho nao peco mais nada"
+text = "ae bom"
 fixed_width = true
 
-[node name="Label" parent="AllViewport/MousePosition/LabelBox" index="1"]
-margin_right = 175.0
-margin_bottom = 36.0
-text = "por favor da certo caralho nao peco mais nada"
-align = 1
-autowrap = true
-
-[node name="ConnectedPlayers" type="VBoxContainer" parent="AllViewport"]
-margin_right = 126.0
-margin_bottom = 115.0
-custom_constants/separation = 0
-
-[node name="LabelBox" parent="AllViewport/ConnectedPlayers" instance=ExtResource( 3 )]
+[node name="ConnectedPlayers" type="VBoxContainer" parent="."]
+anchor_bottom = 1.0
 margin_right = 132.0
+margin_bottom = -168.0
+custom_constants/separation = 0
+alignment = 2
+
+[node name="LabelBox" parent="ConnectedPlayers" instance=ExtResource( 2 )]
+margin_top = 336.0
+margin_right = 132.0
+margin_bottom = 360.0
 rect_min_size = Vector2( 132, 24 )
 rect_pivot_offset = Vector2( 66, 12 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
+texture = SubResource( 4 )
 text = "Connected Players:"
 
-[node name="LabelBox2" parent="AllViewport/ConnectedPlayers" instance=ExtResource( 3 )]
-margin_top = 24.0
+[node name="LabelBox2" parent="ConnectedPlayers" instance=ExtResource( 2 )]
+margin_top = 360.0
 margin_right = 92.0
-margin_bottom = 48.0
+margin_bottom = 384.0
 rect_min_size = Vector2( 92, 24 )
 rect_pivot_offset = Vector2( 46, 12 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
+texture = SubResource( 4 )
 text = "Fulano de tal"
 
-[node name="LabelBox3" parent="AllViewport/ConnectedPlayers" instance=ExtResource( 3 )]
-margin_top = 48.0
+[node name="LabelBox3" parent="ConnectedPlayers" instance=ExtResource( 2 )]
+margin_top = 384.0
 margin_right = 64.0
-margin_bottom = 72.0
+margin_bottom = 408.0
 rect_min_size = Vector2( 64, 24 )
 rect_pivot_offset = Vector2( 32, 12 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
+texture = SubResource( 4 )
 text = "Beltrano"
 
-[node name="LabelBox4" parent="AllViewport/ConnectedPlayers" instance=ExtResource( 3 )]
-margin_top = 72.0
+[node name="LabelBox4" parent="ConnectedPlayers" instance=ExtResource( 2 )]
+margin_top = 408.0
 margin_right = 110.0
-margin_bottom = 96.0
+margin_bottom = 432.0
 rect_min_size = Vector2( 110, 24 )
 rect_pivot_offset = Vector2( 55, 12 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
+texture = SubResource( 4 )
 text = "Ciclano da silvA"
 
-[editable path="AllViewport/MousePosition/LabelBox"]
+[node name="Chat" type="NinePatchRect" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -168.0
+margin_right = 300.0
+texture = SubResource( 4 )
+draw_center = false
+patch_margin_left = 2
+patch_margin_top = 2
+patch_margin_right = 2
+patch_margin_bottom = 2
+script = ExtResource( 3 )
+
+[node name="BG" type="ColorRect" parent="Chat"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Chat"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = -4.0
+margin_bottom = -32.0
+focus_mode = 2
+bbcode_enabled = true
+scroll_following = true
+selection_enabled = true
+
+[node name="InputTextRect" type="NinePatchRect" parent="Chat"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -31.0
+texture = SubResource( 4 )
+draw_center = false
+patch_margin_top = 1
+
+[node name="LineEdit" type="LineEdit" parent="Chat/InputTextRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 3.0
+margin_top = 3.0
+margin_right = -3.0
+margin_bottom = -3.0

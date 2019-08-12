@@ -8,7 +8,7 @@ func _ready():
 	camera = get_parent().find_node("Camera")
 
 func _input(event):
-	if( camera and 
+	if( camera and GameContext.gui and
 	(event is InputEventMouseMotion or
 	event is InputEventKey) ):
 		var mouse_position = get_viewport().get_local_mouse_position()
@@ -37,8 +37,6 @@ func _input(event):
 			
 			if( result.collider.is_in_group("GridMap") ):
 				GameContext.gui.setHovered( result.collider )
-			
-		get_tree().set_input_as_handled()
 
 
 
