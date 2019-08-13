@@ -23,7 +23,13 @@ func _input(event):
 			if( line_edit.text.length() > 200 ):
 				line_edit.text = line_edit.text.substr(0,200)
 			if( line_edit.text.length() > 0 ): 
-				addPlayerMessage( "yellow","Local",line_edit.text)
+				addPlayerMessage( 
+					GameContext.my_player_state.color,
+					GameContext.my_player_state.name,
+					line_edit.text)
+				if( NetworkSystem.connected_peers.size() > 0 ):
+					NetworkSystem.my_peer.transfer_mode = NetworkedMultiplayerPeer.TRANSFER_MODE_RELIABLE
+					NetworkSystem.my_peer.put_packet(var2bytes(line_edit.text))
 			line_edit.text = ""
 		else:
 			line_edit.grab_focus()
@@ -32,6 +38,6 @@ func _input(event):
 func addPlayerMessage( color , name , message ):
 	var time = OS.get_time()
 	var time_string = var2str(time.hour) + ":" + var2str(time.minute) + ":" + var2str(time.second)
-	var string = "[color="+color+"][" + time_string + " " + name + "]:[/color] " + message
+	var string = "[color=#"+color.to_html(false)+"][" + time_string + " " + name + "]:[/color] " + message
 	chat_log.append_bbcode( string )
 	chat_log.newline()

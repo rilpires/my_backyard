@@ -4,6 +4,9 @@ var speed = 10
 var input_direction = Vector3(0,0,0);
 
 func _ready():
+	fixAnimations()
+
+func fixAnimations():
 	var anim_player = get_node("Model/Armature/AnimationPlayer")
 	for anim_name in anim_player.get_animation_list() :
 		var anim = anim_player.get_animation(anim_name)

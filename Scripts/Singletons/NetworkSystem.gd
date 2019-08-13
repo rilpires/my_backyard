@@ -1,6 +1,6 @@
 extends Node
 
-const DEFAULT_PORT = 1918
+const DEFAULT_PORT = 31417
 
 signal connection_failed
 signal connection_succeeded
@@ -21,24 +21,39 @@ func _ready():
 	my_peer.connect("peer_connected",self,"_peer_connected")
 	my_peer.connect("peer_disconnected",self,"_peer_disconnected")
 	my_peer.connect("server_disconnected",self,"_server_disconnected")
+	
 	poll_timer = Timer.new()
-	poll_timer.wait_time = 0.05
-	poll_timer.process_mode = Timer.TIMER_PROCESS_IDLE
-	poll_timer.connect("timeout",self,"_poll_timer")
+	add_child(poll_timer)
+	poll_timer.wait_time = 0.1
+	poll_timer.one_shot = false
+	poll_timer.process_mode = Timer.TIMER_PROCESS_PHYSICS
+	#poll_timer.connect("timeout",self,"_poll_timer")
 	poll_timer.start()
 
-func _poll_timer():
-	if( my_peer != null and my_peer.get_connection_status() == NetworkedMultiplayerPeer.CONNECTION_CONNECTED ):
+func _physics_process(delta):
+	if( my_peer.get_connection_status() == 2 ):
 		my_peer.poll()
-		if( my_peer.get_available_packet_count() > 0 ):
+		while( my_peer.get_available_packet_count() > 0 ):
 			var packet_peer_id = my_peer.get_packet_peer()
 			var packet_address = my_peer.get_peer_address( packet_peer_id )
 			var packet_port = my_peer.get_peer_port( packet_peer_id )
-			print("message from: " , packet_address , ":" , packet_port )
-			var msg = bytes2var( my_peer.get_packet() )
-			print( msg )
+			var packet_channel = my_peer.get_packet_channel()
+			var msg = my_peer.get_var(true)
+			print("bytesize: " , var2bytes(msg).size() )
 			
+			#print("message from: " , packet_address , ":" , packet_port )
+			#print( msg )
 			
+			var player_that_sent = connected_players[packet_peer_id]
+			# Reliable channel
+			if( packet_channel == 1 ):
+				GameContext.gui.chat_log.addPlayerMessage( player_that_sent.color , "other" , msg )
+			
+			# Unreliable ordered channel
+			elif( packet_channel == 2 ):
+				player_that_sent.position = msg[0]
+				player_that_sent.rotation = msg[1]
+	
 
 func connectTo( ip_address , port ):
 	var connection_status = my_peer.get_connection_status()
@@ -65,13 +80,17 @@ func _connection_succeeded():
 	print("Yay!! Connection succeeded")
 	emit_signal("connection_succeeded")
 func _peer_connected(id):
+	print("someone connected")
 	connected_peers.push_back( id )
-	connected_players[ id ] = load("res://Scripts/Player.gd").new()
+	connected_players[ id ] = load("res://Scripts/Player.gd").new( id )
 	emit_signal("player_entered", connected_players[id] )
 func _peer_disconnected( id ):
+	print("someone disconnected")
 	connected_peers.erase( id )
 	emit_signal("player_exited", connected_players[id] )
 	connected_players.erase( id )
 func _server_disconnected():
 	print("Server disconnected :(")
 	emit_signal("server_disconnected")
+
+

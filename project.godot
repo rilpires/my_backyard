@@ -24,6 +24,10 @@ config/icon="res://icon.png"
 GameContext="*res://Scripts/Singletons/GameContext.gd"
 NetworkSystem="*res://Scripts/Singletons/NetworkSystem.gd"
 
+[debug]
+
+gdscript/warnings/enable=false
+
 [input]
 
 ui_focus_prev={

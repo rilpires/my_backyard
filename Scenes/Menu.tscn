@@ -13,6 +13,7 @@ void fragment(){
 shader = SubResource( 1 )
 
 [sub_resource type="GDScript" id=3]
+resource_name = "CONNECTION_SETUP"
 script/source = "extends NinePatchRect
 
 onready var your_name = $YourName
@@ -25,6 +26,7 @@ func _ready():
 	start_button.connect(\"button_up\",self,\"_start_pressed\")
 	host_checkbox.connect(\"pressed\",self,\"_host_checkbox_changed\")
 	_host_checkbox_changed()
+	NetworkSystem.connect(\"connection_succeeded\",self,\"_connection_succeeded\")
 
 
 func _host_checkbox_changed():
@@ -43,15 +45,18 @@ func _start_pressed():
 	if( ip_address.length() <= 1 ):
 		ip_address = \"127.0.0.1\"
 	
-	GameContext.my_name = your_name.text
-	if( GameContext.my_name.length() == 0 ):
-		GameContext.my_name = \"Player\"
+	GameContext.my_player_state = load(\"res://Scripts/Player.gd\").new(-1)
+	GameContext.my_player_state.name = your_name.text
+	if( GameContext.my_player_state.name.length() == 0 ):
+		GameContext.my_player_state.name = \"Player\"
 	if( host_checkbox.pressed ):
 		NetworkSystem.createServer( port )
+		get_tree().change_scene_to( load(\"res://Scenes/MainSceneRoot.tscn\") )
 	else:
 		NetworkSystem.connectTo( ip_address , port )
 
-
+func _connection_succeeded():
+	get_tree().change_scene_to( load(\"res://Scenes/MainSceneRoot.tscn\") )
 "
 
 [node name="Menu" type="Control"]

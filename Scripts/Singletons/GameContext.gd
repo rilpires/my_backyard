@@ -1,12 +1,12 @@
 extends Node
 
 const GameWorld = preload('res://Scripts/GameWorld.gd')
+const Player = preload("res://Scripts/Player.gd")
 
-var current_game_world = null
+var current_game_world : GameWorld = null
+var my_player_state : Player = null
 var gui = null
 var main_root = null
-var my_name = ""
-var my_color = null
 
 
 func _init():
