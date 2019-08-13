@@ -23,7 +23,7 @@ func _input(event):
 			if( line_edit.text.length() > 200 ):
 				line_edit.text = line_edit.text.substr(0,200)
 			if( line_edit.text.length() > 0 ): 
-				addPlayerMessage( "red","Local",line_edit.text)
+				addPlayerMessage( "yellow","Local",line_edit.text)
 			line_edit.text = ""
 		else:
 			line_edit.grab_focus()

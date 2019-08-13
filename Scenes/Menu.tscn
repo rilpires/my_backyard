@@ -1,0 +1,122 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Resources/Sprites/Textures/chess.png" type="Texture" id=1]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+void fragment(){
+	COLOR.rgb = texture( TEXTURE , UV*0.5 + vec2(1,1)*TIME ).rgb;
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends NinePatchRect
+
+onready var your_name = $YourName
+onready var ip_address_edit = $IP_Address
+onready var port_edit = $Port
+onready var start_button = $Start
+onready var host_checkbox = $HostCheckbox
+
+func _ready():
+	start_button.connect(\"button_up\",self,\"_start_pressed\")
+	host_checkbox.connect(\"pressed\",self,\"_host_checkbox_changed\")
+	_host_checkbox_changed()
+
+
+func _host_checkbox_changed():
+	ip_address_edit.visible = not host_checkbox.pressed
+	if( host_checkbox.pressed ):
+		start_button.text = \"Create server\"
+	else:
+		start_button.text = \"Connect to server\"
+
+func _start_pressed():
+	
+	var port = NetworkSystem.DEFAULT_PORT
+	var ip_address = ip_address_edit.text
+	if( port_edit.text.length() > 0 ): 
+		port = int(port_edit.text)
+	if( ip_address.length() <= 1 ):
+		ip_address = \"127.0.0.1\"
+	
+	GameContext.my_name = your_name.text
+	if( GameContext.my_name.length() == 0 ):
+		GameContext.my_name = \"Player\"
+	if( host_checkbox.pressed ):
+		NetworkSystem.createServer( port )
+	else:
+		NetworkSystem.connectTo( ip_address , port )
+
+
+"
+
+[node name="Menu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="BG" type="TextureRect" parent="."]
+self_modulate = Color( 0.113725, 0.113725, 0.113725, 1 )
+show_behind_parent = true
+material = SubResource( 2 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 2
+
+[node name="ConnectionSetup" type="NinePatchRect" parent="."]
+margin_right = 266.0
+margin_bottom = 163.0
+texture = ExtResource( 1 )
+draw_center = false
+region_rect = Rect2( 10, 4, 1, 2 )
+patch_margin_left = 2
+patch_margin_top = 2
+patch_margin_right = 2
+patch_margin_bottom = 2
+script = SubResource( 3 )
+
+[node name="ColorRect" type="ColorRect" parent="ConnectionSetup"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.160784, 0.160784, 0.160784, 1 )
+
+[node name="HostCheckbox" type="CheckBox" parent="ConnectionSetup"]
+margin_left = 10.7773
+margin_top = 57.3405
+margin_right = 93.7773
+margin_bottom = 81.3405
+pressed = true
+text = "I'm Host"
+
+[node name="IP_Address" type="LineEdit" parent="ConnectionSetup"]
+margin_left = 19.0
+margin_top = 82.9708
+margin_right = 125.0
+margin_bottom = 106.971
+placeholder_text = "IP Address"
+
+[node name="Port" type="LineEdit" parent="ConnectionSetup"]
+margin_left = 139.0
+margin_top = 82.9708
+margin_right = 243.0
+margin_bottom = 106.971
+placeholder_text = "Port"
+
+[node name="Start" type="Button" parent="ConnectionSetup"]
+margin_left = 21.2752
+margin_top = 115.971
+margin_right = 97.2752
+margin_bottom = 140.971
+
+[node name="YourName" type="LineEdit" parent="ConnectionSetup"]
+margin_left = 20.0
+margin_top = 28.0
+margin_right = 242.0
+margin_bottom = 52.0
+placeholder_text = "Your name"
