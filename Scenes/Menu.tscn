@@ -45,7 +45,7 @@ func _start_pressed():
 	if( ip_address.length() <= 1 ):
 		ip_address = \"127.0.0.1\"
 	
-	GameContext.my_player_state = load(\"res://Scripts/Player.gd\").new(-1)
+	GameContext.my_player_state = load(\"res://Scripts/PlayerState.gd\").new(-1)
 	GameContext.my_player_state.name = your_name.text
 	if( GameContext.my_player_state.name.length() == 0 ):
 		GameContext.my_player_state.name = \"Player\"

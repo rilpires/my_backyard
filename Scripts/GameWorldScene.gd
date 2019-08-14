@@ -20,12 +20,26 @@ func _sync_tick():
 	sendMyState()
 
 func sendMyState():
-	if( NetworkSystem.my_peer and NetworkSystem.my_peer.get_connection_status() == NetworkedMultiplayerPeer.CONNECTION_CONNECTED ):
-		var peer = NetworkSystem.my_peer
-		var packet = [$Character.translation,$Character/Model.rotation]
-		peer.transfer_mode = peer.TRANSFER_MODE_UNRELIABLE 
-		#peer.put_var( packet , true )
-		peer.put_packet( var2bytes(packet) )
+	GameContext.my_player_state.position = $Character.translation
+	GameContext.my_player_state.rotation = $Character/Model.rotation
+	
+	if( NetworkSystem.my_peer and 
+	NetworkSystem.my_peer.get_connection_status() == NetworkedMultiplayerPeer.CONNECTION_CONNECTED and
+	NetworkSystem.connected_players.keys().size() > 0 ):
+		
+		var packet = GameContext.my_player_state._pack()
+		if( packet != null ):
+			if( NetworkSystem.using_websocket ) :
+				for id in NetworkSystem.connected_peers:
+					var ws_peer = NetworkSystem.my_peer.get_peer( id )
+					ws_peer.set_write_mode( WebSocketPeer.WRITE_MODE_BINARY )
+					ws_peer.put_var( packet , false )
+			else:
+				var peer = NetworkSystem.my_peer
+				peer.transfer_mode = peer.TRANSFER_MODE_UNRELIABLE 
+				peer.put_var( packet , false )
+				#peer.put_packet( var2bytes(packet) )
+		
 
 func updateOtherPlayers():
 	var other_players_parent = $OtherPlayers
