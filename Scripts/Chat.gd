@@ -27,9 +27,6 @@ func _input(event):
 					GameContext.my_player_state.color,
 					GameContext.my_player_state.name,
 					line_edit.text)
-				if( NetworkSystem.connected_peers.size() > 0 ):
-					NetworkSystem.my_peer.transfer_mode = NetworkedMultiplayerPeer.TRANSFER_MODE_RELIABLE
-					NetworkSystem.my_peer.put_packet(var2bytes(line_edit.text))
 			line_edit.text = ""
 		else:
 			line_edit.grab_focus()

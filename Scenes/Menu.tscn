@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Resources/Sprites/Textures/chess.png" type="Texture" id=1]
 
@@ -16,47 +16,59 @@ shader = SubResource( 1 )
 resource_name = "CONNECTION_SETUP"
 script/source = "extends NinePatchRect
 
-onready var your_name = $YourName
-onready var ip_address_edit = $IP_Address
-onready var port_edit = $Port
-onready var start_button = $Start
-onready var host_checkbox = $HostCheckbox
-
 func _ready():
-	start_button.connect(\"button_up\",self,\"_start_pressed\")
-	host_checkbox.connect(\"pressed\",self,\"_host_checkbox_changed\")
-	_host_checkbox_changed()
-	NetworkSystem.connect(\"connection_succeeded\",self,\"_connection_succeeded\")
+	$Start.connect(\"button_up\",self,\"_start_pressed\")
 
 
-func _host_checkbox_changed():
-	ip_address_edit.visible = not host_checkbox.pressed
-	if( host_checkbox.pressed ):
-		start_button.text = \"Create server\"
-	else:
-		start_button.text = \"Connect to server\"
 
 func _start_pressed():
-	
-	var port = NetworkSystem.DEFAULT_PORT
-	var ip_address = ip_address_edit.text
-	if( port_edit.text.length() > 0 ): 
-		port = int(port_edit.text)
-	if( ip_address.length() <= 1 ):
-		ip_address = \"127.0.0.1\"
-	
-	GameContext.my_player_state = load(\"res://Scripts/PlayerState.gd\").new(-1)
-	GameContext.my_player_state.name = your_name.text
-	if( GameContext.my_player_state.name.length() == 0 ):
-		GameContext.my_player_state.name = \"Player\"
-	if( host_checkbox.pressed ):
-		NetworkSystem.createServer( port )
+	var room_name = $RoomName.text
+	if( room_name.length() > 0 ):
+		NetworkSystem.connectTo( room_name )
 		get_tree().change_scene_to( load(\"res://Scenes/MainSceneRoot.tscn\") )
-	else:
-		NetworkSystem.connectTo( ip_address , port )
 
 func _connection_succeeded():
 	get_tree().change_scene_to( load(\"res://Scenes/MainSceneRoot.tscn\") )
+"
+
+[sub_resource type="GDScript" id=5]
+script/source = "extends LineEdit
+
+func _ready():
+	pass
+
+
+func _on_YourName_text_changed(new_text):
+	GameContext.my_player_state.name = new_text"
+
+[sub_resource type="GDScript" id=4]
+script/source = "extends ColorPickerButton
+
+func _ready():
+	GameContext.my_player_state.color = self.color
+
+func _on_FavoriteColor_color_changed(color):
+	GameContext.my_player_state.color = color
+"
+
+[sub_resource type="GDScript" id=6]
+script/source = "extends Button
+
+func _ready():
+	disabled = true
+	text = \"Connecting to server...\"
+	
+	NetworkSystem.connect(\"connection_succeeded\",self,\"_connected\")
+	NetworkSystem.connect(\"connection_failed\",self,\"_connection_failed\")
+
+func _connected():
+	disabled = false
+	text = \"Just let me in!!!\"
+
+func _connection_failed():
+	disabled = true
+	text = \"Connetion failed :(\"
+
 "
 
 [node name="Menu" type="Control"]
@@ -74,8 +86,8 @@ expand = true
 stretch_mode = 2
 
 [node name="ConnectionSetup" type="NinePatchRect" parent="."]
-margin_right = 266.0
-margin_bottom = 163.0
+margin_right = 384.0
+margin_bottom = 164.0
 texture = ExtResource( 1 )
 draw_center = false
 region_rect = Rect2( 10, 4, 1, 2 )
@@ -91,37 +103,63 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color( 0.160784, 0.160784, 0.160784, 1 )
 
-[node name="HostCheckbox" type="CheckBox" parent="ConnectionSetup"]
-margin_left = 10.7773
-margin_top = 57.3405
-margin_right = 93.7773
-margin_bottom = 81.3405
-pressed = true
-text = "I'm Host"
+[node name="YourName" type="LineEdit" parent="ConnectionSetup"]
+editor/display_folded = true
+margin_left = 88.0
+margin_top = 28.0
+margin_right = 370.0
+margin_bottom = 52.0
+script = SubResource( 5 )
 
-[node name="IP_Address" type="LineEdit" parent="ConnectionSetup"]
-margin_left = 19.0
-margin_top = 82.9708
-margin_right = 125.0
-margin_bottom = 106.971
-placeholder_text = "IP Address"
+[node name="Label" type="Label" parent="ConnectionSetup/YourName"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = -78.0
+margin_top = -7.0
+margin_right = -3.0
+margin_bottom = 7.0
+text = "Your name:"
 
-[node name="Port" type="LineEdit" parent="ConnectionSetup"]
-margin_left = 139.0
-margin_top = 82.9708
-margin_right = 243.0
-margin_bottom = 106.971
-placeholder_text = "Port"
+[node name="RoomName" type="LineEdit" parent="ConnectionSetup"]
+editor/display_folded = true
+margin_left = 150.0
+margin_top = 95.0
+margin_right = 370.0
+margin_bottom = 119.0
+
+[node name="Label" type="Label" parent="ConnectionSetup/RoomName"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = -140.0
+margin_top = -7.0
+margin_right = -4.0
+margin_bottom = 7.0
+text = "Room to join/create:"
+
+[node name="FavoriteColor" type="ColorPickerButton" parent="ConnectionSetup"]
+editor/display_folded = true
+margin_left = 150.0
+margin_top = 60.0
+margin_right = 190.0
+margin_bottom = 89.0
+color = Color( 0.223529, 0.74902, 0.305882, 1 )
+script = SubResource( 4 )
+
+[node name="Label" type="Label" parent="ConnectionSetup/FavoriteColor"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = -140.0
+margin_top = -6.5
+margin_right = -10.0
+margin_bottom = 7.5
+text = "Your favorite color:"
 
 [node name="Start" type="Button" parent="ConnectionSetup"]
-margin_left = 21.2752
-margin_top = 115.971
-margin_right = 97.2752
-margin_bottom = 140.971
-
-[node name="YourName" type="LineEdit" parent="ConnectionSetup"]
-margin_left = 20.0
-margin_top = 28.0
-margin_right = 242.0
-margin_bottom = 52.0
-placeholder_text = "Your name"
+margin_left = 10.0
+margin_top = 126.0
+margin_right = 370.0
+margin_bottom = 151.0
+text = "Just let me in please"
+script = SubResource( 6 )
+[connection signal="text_changed" from="ConnectionSetup/YourName" to="ConnectionSetup/YourName" method="_on_YourName_text_changed"]
+[connection signal="color_changed" from="ConnectionSetup/FavoriteColor" to="ConnectionSetup/FavoriteColor" method="_on_FavoriteColor_color_changed"]

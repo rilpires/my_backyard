@@ -1,6 +1,6 @@
 extends Node
 
-const DEFAULT_PORT = 31417
+const DEFAULT_PORT = 4123
 
 signal connection_failed
 signal connection_succeeded
@@ -9,93 +9,56 @@ signal player_exited
 signal server_disconnected
 
 var poll_timer
-var im_host = false
-var using_websocket = false
+var server_peer : WebSocketPeer = null
 var my_peer : NetworkedMultiplayerPeer = null
-var connected_peers = []
 var connected_players = {} # Array of PlayerState
 
 func _ready():
-	match (OS.get_name()):
-		"Windowsss":
-			my_peer = NetworkedMultiplayerENet.new()
-			get_tree().multiplayer_poll = true
-		_:
-			using_websocket = true
-			get_tree().multiplayer_poll = false
+	get_tree().multiplayer_poll = false
+	
+	var url =  "ws://localhost:"+var2str(DEFAULT_PORT)
+	my_peer = WebSocketClient.new()
+	print("connecting to " , url , ": " , my_peer.connect_to_url(url) )
+	setupMyPeer( my_peer )
 
 func _physics_process(delta):
-	if my_peer and using_websocket and im_host and my_peer.is_listening():
-		my_peer.poll()
-	elif my_peer and using_websocket and not im_host and my_peer.get_connection_status() != 0:
+	if (my_peer and my_peer.get_connection_status() != 0):
 		my_peer.poll()
 	else:
 		return
 	
-	for peer_id in connected_peers:
-		var ws_peer = my_peer.get_peer(peer_id)
-		if( ws_peer != null ):
-			if( ws_peer.get_available_packet_count() > 0 ):
-				var player_state = connected_players[peer_id]
-				var msg = ws_peer.get_var()
-				# print("msg size: " , var2bytes(msg).size() )
-				player_state._unpack(msg)
+	if( server_peer != null and server_peer.get_available_packet_count() > 0 ):
+		var msg = server_peer.get_packet()
+		if( server_peer.was_string_packet() ):
+			GameContext.my_player_state.server_id = int(msg.get_string_from_utf8())
+			print("My server_id: " , GameContext.my_player_state.server_id )
 		else:
-			connected_peers.erase(peer_id)
+			msg = bytes2var(msg)
+			if( typeof(msg) == TYPE_DICTIONARY ):
+				var player_server_id = msg.id
+				if( not connected_players.has(player_server_id) ):
+					connected_players[player_server_id] = load("res://Scripts/PlayerState.gd").new(player_server_id)
+				connected_players[player_server_id]._unpack(msg)
 
-func connectTo( ip_address , port ):
-	im_host = false
-	
-	if( using_websocket ):
-		var url =  "ws://" + "localhost:"+var2str(port)+"/"
-		my_peer = WebSocketClient.new();
-		print("connecting to " , url , ": " , my_peer.connect_to_url(url) )
-	else:
-		print("creating client: " , my_peer.create_client( ip_address , port ) )
-	
-	setupMyPeer( my_peer )
-
-func createServer( port ):
-	im_host = true
-	
-	if( using_websocket ):
-		my_peer = WebSocketServer.new()
-		print("listening server on port " , port , ": " , my_peer.listen( port ) )
-	else:
-		print("creating server: " , my_peer.create_server( port , 7 ) )
-	
-	setupMyPeer( my_peer )
+func connectTo( room_name ):
+	if( server_peer and my_peer.get_connection_status() == 2 ):
+		server_peer.set_write_mode( WebSocketPeer.WRITE_MODE_TEXT )
+		server_peer.put_packet( room_name.to_utf8() )
 
 func setupMyPeer(p):
 	get_tree().network_peer = p
 	p.connect("connection_failed",self,"_connection_failed")
-	p.connect("connection_succeeded",self,"_connection_succeeded")
-	p.connect("peer_connected",self,"_peer_connected")
-	p.connect("peer_disconnected",self,"_peer_disconnected")
+	p.connect("connection_succeeded",self,"_connection_succeeded") #networked multiplayer
+	p.connect("connection_established",self,"_connection_succeeded") # specific for ws
 	p.connect("server_disconnected",self,"_server_disconnected")
-	if( using_websocket ):
-		if(im_host):
-			p.connect("client_connected",self,"_peer_connected")
-		else:
-			p.connect("connection_established",self,"_connection_succeeded")
 
 func _connection_failed():
 	print("Connection failed :(")
 	emit_signal("connection_failed")
 func _connection_succeeded(protocol=null):
-	print("Yay!! Connection succeeded!! meu id eh " , my_peer.get_unique_id() )
-	if(im_host == false): _peer_connected(1,protocol) # We need to add host as peer...
+	print("Yay!! Connection succeeded!!" )
+	server_peer = my_peer.get_peer(1)
 	emit_signal("connection_succeeded")
-func _peer_connected(id,protocol=null):
-	print("someone connected, id: " , id , ", protocol: " , null , " (meu id eh )" , my_peer.get_unique_id() )
-	connected_peers.push_back( id )
-	connected_players[ id ] = load("res://Scripts/PlayerState.gd").new( id )
-	emit_signal("player_entered", connected_players[id] )
-func _peer_disconnected( id ):
-	print("someone disconnected")
-	connected_peers.erase( id )
-	emit_signal("player_exited", connected_players[id] )
-	connected_players.erase( id )
 func _server_disconnected():
 	print("Server disconnected :(")
 	emit_signal("server_disconnected")

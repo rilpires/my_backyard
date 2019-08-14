@@ -1,6 +1,6 @@
 extends Reference
 
-var id = null
+var server_id = null
 var name = ""
 var color = Color( 1.0 , 1.0 , 1.0 )
 var position = Vector3()
@@ -9,8 +9,8 @@ var rotation = Vector3()
 var last_position_sent = position 
 var last_rotation_sent = rotation
 
-func _init( _id ):
-	id = _id
+func _init( _server_id ):
+	server_id = _server_id
 	color = Color( 1.0 , 0 , 0 )
 	var r = rand_seed( OS.get_time().second )[0]
 	r = float(r%100)/100.0
@@ -28,7 +28,8 @@ func _pack():
 	
 	if( pack.keys().size() == 0 ): 
 		return null 
-	else: 
+	else:
+		pack.id = server_id
 		return pack
 
 func _unpack( pack ):

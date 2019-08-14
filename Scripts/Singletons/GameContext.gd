@@ -11,4 +11,5 @@ var main_root = null
 
 func _init():
 	current_game_world = GameWorld.new()
+	my_player_state = PlayerState.new(null)
 
