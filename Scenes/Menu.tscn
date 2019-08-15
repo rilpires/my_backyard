@@ -226,10 +226,10 @@ color = Color( 0.160784, 0.160784, 0.160784, 0.921569 )
 [node name="Title" parent="ExistantRooms" instance=ExtResource( 2 )]
 margin_left = -10.0
 margin_top = -10.0
-margin_right = 109.0
+margin_right = 99.0
 margin_bottom = 14.0
-rect_min_size = Vector2( 119, 24 )
-rect_pivot_offset = Vector2( 59.5, 12 )
+rect_min_size = Vector2( 109, 24 )
+rect_pivot_offset = Vector2( 54.5, 12 )
 text = "Existant rooms:"
 
 [node name="List" type="VBoxContainer" parent="ExistantRooms"]
