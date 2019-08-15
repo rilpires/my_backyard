@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Scripts/GUI.gd" type="Script" id=1]
 [ext_resource path="res://Scenes/LabelBox.scn" type="PackedScene" id=2]
@@ -38,6 +38,37 @@ colors = PoolColorArray( 0.611023, 0.624836, 0.832031, 1, 0.336563, 0.35363, 0.5
 gradient = SubResource( 3 )
 width = 32
 
+[sub_resource type="GDScript" id=5]
+script/source = "extends VBoxContainer
+
+const LabelBox = preload(\"res://Scenes/LabelBox.scn\")
+
+func _ready():
+	var timer = $UpdateTimer
+	timer.wait_time = 0.5
+	timer.process_mode = Timer.TIMER_PROCESS_IDLE
+	timer.one_shot = false
+	timer.autostart = true
+	timer.start()
+	timer.connect(\"timeout\",self,\"_timeout\")
+
+func _timeout():
+	var my_state = GameContext.my_player_state
+	for child in get_children():
+		if ([\"UpdateTimer\",\"Title\",\"gap\",String(my_state.server_id)].find(child.name) != -1):
+			continue 
+		var server_id = int(child.name)
+		if( not NetworkSystem.connected_players.has(server_id) ):
+			child.queue_free()
+	
+	for player_state in NetworkSystem.connected_players.values() + [my_state]:
+		if( not has_node(String(player_state.server_id)) ):
+			var new_inst = LabelBox.instance()
+			new_inst.text = player_state.name
+			new_inst.name = String(player_state.server_id)
+			new_inst.text_color = player_state.color
+			add_child(new_inst)"
+
 [node name="GUI" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -59,10 +90,10 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -90.0
 margin_top = -48.0
-margin_right = 90.0
+margin_right = -32.0
 margin_bottom = -24.0
-rect_min_size = Vector2( 180, 24 )
-rect_pivot_offset = Vector2( 90, 12 )
+rect_min_size = Vector2( 58, 24 )
+rect_pivot_offset = Vector2( 29, 12 )
 rect_clip_content = true
 texture = SubResource( 4 )
 region_rect = Rect2( 303, 135, 0, 0 )
@@ -75,17 +106,27 @@ margin_right = 132.0
 margin_bottom = -168.0
 custom_constants/separation = 0
 alignment = 2
+script = SubResource( 5 )
 
-[node name="LabelBox" parent="ConnectedPlayers" instance=ExtResource( 2 )]
-margin_top = 336.0
+[node name="UpdateTimer" type="Timer" parent="ConnectedPlayers"]
+
+[node name="Title" parent="ConnectedPlayers" instance=ExtResource( 2 )]
+margin_top = 324.0
 margin_right = 132.0
-margin_bottom = 360.0
+margin_bottom = 348.0
 rect_min_size = Vector2( 132, 24 )
 rect_pivot_offset = Vector2( 66, 12 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
 texture = SubResource( 4 )
 text = "Connected Players:"
+
+[node name="gap" type="Control" parent="ConnectedPlayers"]
+margin_top = 348.0
+margin_right = 132.0
+margin_bottom = 360.0
+rect_min_size = Vector2( 0, 12 )
+mouse_filter = 2
 
 [node name="LabelBox2" parent="ConnectedPlayers" instance=ExtResource( 2 )]
 margin_top = 360.0

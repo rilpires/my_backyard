@@ -41,5 +41,11 @@ func updateOtherPlayers():
 			new_inst.set_script( load("res://Scripts/PeerPlayerController.gd") )
 			new_inst.my_state = player_state
 			other_players_parent.add_child( new_inst )
+			NetworkSystem.resend_everything = true
+	
+	for child in other_players_parent.get_children():
+		if( not NetworkSystem.connected_players.has( child.my_state.server_id ) ):
+			print( child.my_state.server_id , " disconnected...")
+			child.queue_free()
 
 

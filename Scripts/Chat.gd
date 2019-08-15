@@ -23,18 +23,21 @@ func _input(event):
 			if( line_edit.text.length() > 200 ):
 				line_edit.text = line_edit.text.substr(0,200)
 			if( line_edit.text.length() > 0 ): 
-				addPlayerMessage( 
-					GameContext.my_player_state.color,
-					GameContext.my_player_state.name,
-					line_edit.text)
+				addPlayerMessage( GameContext.my_player_state , line_edit.text)
+				GameContext.my_player_state.txt_message = line_edit.text
+			
 			line_edit.text = ""
 		else:
 			line_edit.grab_focus()
 		
 
-func addPlayerMessage( color , name , message ):
-	var time = OS.get_time()
-	var time_string = var2str(time.hour) + ":" + var2str(time.minute) + ":" + var2str(time.second)
-	var string = "[color=#"+color.to_html(false)+"][" + time_string + " " + name + "]:[/color] " + message
-	chat_log.append_bbcode( string )
-	chat_log.newline()
+func addPlayerMessage( player_state , message ):
+	if( message.length() > 0 ):
+		var time = OS.get_time()
+		var time_string = var2str(time.hour) + ":" + var2str(time.minute) + ":" + var2str(time.second)
+		var player_color_tag = "[color=#"+player_state.color.to_html(false)+"]"
+		var white_color_tag = "[color=white]"
+		var end_color_tag = "[/color]"
+		var string =  "[ " + time_string + "\t" + player_color_tag + player_state.name + end_color_tag + " ]: " + message
+		chat_log.append_bbcode( string )
+		chat_log.newline()

@@ -8,7 +8,7 @@ export (int) var label_margin_left = 5
 export (int) var label_margin_right = 5
 export (int) var label_margin_top = 5
 export (int) var label_margin_bottom = 5
-
+export (Color) var text_color = Color(1.0,1.0,1.0) setget setTextColor
 
 func _ready():
 	if( has_node("Label") ):
@@ -48,6 +48,12 @@ func label_resized():
 	if( fixed_width and grow_direction == 0 ):
 		rect_position.y += (old_size_y - rect_min_size.y )
 
+func setTextColor(new_value):
+	text_color = new_value
+	$Label.set("custom_colors/font_color",text_color)
+	if( new_value != Color(1,1,1) ):
+		$Label.set("custom_colors/font_color_shadow",Color(1,1,1,0))
+	
 
 
 

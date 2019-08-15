@@ -11,6 +11,8 @@ signal server_disconnected
 var poll_timer
 var server_peer : WebSocketPeer = null
 var my_peer : NetworkedMultiplayerPeer = null
+var resend_everything = false
+var room_list : Dictionary = {}
 var connected_players = {} # Array of PlayerState
 
 func _ready():
@@ -30,8 +32,22 @@ func _physics_process(delta):
 	if( server_peer != null and server_peer.get_available_packet_count() > 0 ):
 		var msg = server_peer.get_packet()
 		if( server_peer.was_string_packet() ):
-			GameContext.my_player_state.server_id = int(msg.get_string_from_utf8())
-			print("My server_id: " , GameContext.my_player_state.server_id )
+			var string_from_server = msg.get_string_from_utf8()
+			
+			if( string_from_server.substr(0,3) == "id:" ):
+				var received_id = int(string_from_server)
+				GameContext.my_player_state.server_id = received_id
+				if( GameContext.my_player_state.name.length() == 0 ):
+					GameContext.my_player_state.name = "Player_" + String(received_id)
+				print("My server_id: " , received_id )
+			
+			elif( string_from_server.substr(0,3) == "dc:" ):
+				connected_players.erase(int(string_from_server))
+			
+			if( string_from_server.substr(0,6) == "rooms:" ):
+				string_from_server.erase(0,6)
+				room_list = parse_json( string_from_server )
+			
 		else:
 			msg = bytes2var(msg)
 			if( typeof(msg) == TYPE_DICTIONARY ):
