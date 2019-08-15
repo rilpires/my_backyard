@@ -1,11 +1,13 @@
+
+var express = require("express")
+var app = express()
 var WebSocketServer = require('websocket').server;
 var http = require('http')
 
-var http_server = http.createServer( function(request,response){
-    // We are only implementing websocket here
-})
+app.use(  express.static("../docs") )
+var http_server = http.createServer( app )
 
-http_server.listen( 4123 )
+http_server.listen( 80 )
 
 var ws_server = new WebSocketServer({
     httpServer : http_server ,

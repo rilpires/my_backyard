@@ -17,12 +17,7 @@ var connected_players = {} # Array of PlayerState
 
 func _ready():
 	get_tree().multiplayer_poll = false
-	print("I won't try to connect with server")
-	return
-	var url =  "ws://127.0.0.1:"+var2str(DEFAULT_PORT)
 	my_peer = WebSocketClient.new()
-	print("connecting to " , url , ": " , my_peer.connect_to_url(url) )
-	setupMyPeer( my_peer )
 
 func _physics_process(delta):
 	if (my_peer and my_peer.get_connection_status() != 0):
