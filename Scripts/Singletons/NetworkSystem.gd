@@ -18,7 +18,7 @@ var connected_players = {} # Array of PlayerState
 func _ready():
 	get_tree().multiplayer_poll = false
 	
-	var url =  "ws://155.123.512.919:"+var2str(DEFAULT_PORT)
+	var url =  "ws://127.0.0.1:"+var2str(DEFAULT_PORT)
 	my_peer = WebSocketClient.new()
 	print("connecting to " , url , ": " , my_peer.connect_to_url(url) )
 	setupMyPeer( my_peer )
