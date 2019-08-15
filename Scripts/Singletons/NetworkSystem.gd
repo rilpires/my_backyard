@@ -1,6 +1,6 @@
 extends Node
 
-const DEFAULT_PORT = 4123
+const DEFAULT_PORT = 80
 
 signal connection_failed
 signal connection_succeeded
@@ -18,7 +18,7 @@ var connected_players = {} # Array of PlayerState
 func _ready():
 	get_tree().multiplayer_poll = false
 	
-	var url =  "ws://localhost:"+var2str(DEFAULT_PORT)
+	var url =  "ws://155.123.512.919:"+var2str(DEFAULT_PORT)
 	my_peer = WebSocketClient.new()
 	print("connecting to " , url , ": " , my_peer.connect_to_url(url) )
 	setupMyPeer( my_peer )
