@@ -33,11 +33,15 @@ func _input(event):
 
 func addPlayerMessage( player_state , message ):
 	if( message.length() > 0 ):
-		var time = OS.get_time()
-		var time_string = var2str(time.hour) + ":" + var2str(time.minute) + ":" + var2str(time.second)
-		var player_color_tag = "[color=#"+player_state.color.to_html(false)+"]"
-		var white_color_tag = "[color=white]"
-		var end_color_tag = "[/color]"
-		var string =  "[ " + time_string + "\t" + player_color_tag + player_state.name + end_color_tag + " ]: " + message
-		chat_log.append_bbcode( string )
-		chat_log.newline()
+		if( message == "/hi" ):
+			var character_node = player_state.getCharacterNode()
+			if( character_node): character_node.playAnimationOnce("Waving")
+		else:
+			var time = OS.get_time()
+			var time_string = var2str(time.hour) + ":" + var2str(time.minute) + ":" + var2str(time.second)
+			var player_color_tag = "[color=#"+player_state.color.to_html(false)+"]"
+			var white_color_tag = "[color=white]"
+			var end_color_tag = "[/color]"
+			var string =  "[ " + time_string + "\t" + player_color_tag + player_state.name + end_color_tag + " ]: " + message
+			chat_log.append_bbcode( string )
+			chat_log.newline()

@@ -22,5 +22,8 @@ shape = SubResource( 1 )
 [node name="AnimationPlayer" parent="Model/Armature" index="0"]
 autoplay = "Standing"
 playback_default_blend_time = 0.15
+next/Waving = "Standing"
+
+[node name="DirectionTween" type="Tween" parent="."]
 
 [editable path="Model"]
