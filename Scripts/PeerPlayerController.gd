@@ -17,3 +17,4 @@ func _process(delta):
 		self.input_direction = input_direction
 	else:
 		self.input_direction = Vector3(0,0,0)
+	$Model.rotation = my_state.rotation

@@ -34,6 +34,7 @@ func _input(event):
 func addPlayerMessage( player_state , message ):
 	if( message.length() > 0 ):
 		if( message == "/hi" ):
+			if( player_state == GameContext.my_player_state ): NetworkSystem.resend_everything = true
 			var character_node = player_state.getCharacterNode()
 			if( character_node): character_node.playAnimationOnce("Waving")
 		else:
