@@ -3,9 +3,6 @@ extends WorldEnvironment
 var sync_timer = Timer.new()
 
 func _ready():
-	$Character.set_script( load("res://Scenes/Controller_Character.gd") )
-	$Character.fixAnimations()
-	$Character.set_process_input(true)
 	
 	add_child(sync_timer)
 	sync_timer.wait_time = 0.05

@@ -58,3 +58,30 @@ func _unpack( pack ):
 	if( pack.has("txt") ):
 		GameContext.gui.chat_log.addPlayerMessage( self , pack.txt )
 
+func getCharacterNode():
+	var all_characters = GameContext.get_tree().get_nodes_in_group("Character")
+	if( self == GameContext.my_player_state ):
+		for character in all_characters:
+			if character.is_in_group("Player"):
+				return character
+	else:
+		for character in all_characters:
+			if not character.is_in_group("Player") and character.my_state == self:
+				return character
+	return null
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
