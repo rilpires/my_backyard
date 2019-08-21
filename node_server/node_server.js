@@ -1,18 +1,32 @@
 
+const PORT = 443
+
 var express = require("express")
 var app = express()
 var WebSocketServer = require('websocket').server;
-var http = require('http')
+var http = require('https')
+var fs = require('fs')
 
-app.use(  express.static("../docs") )
-var http_server = http.createServer( app )
+const options = {
+    "key" : fs.readFileSync('node_server/domain-key.txt') ,
+    "cert" : fs.readFileSync('node_server/domain-crt.txt') ,
+}
 
-http_server.listen( 80 )
+app.use(  express.static("/docs", {dotfiles:'allow'}) )
+var http_server = http.createServer( options , app )
+
+http_server.listen( PORT , "0.0.0.0" , function(){
+    console.log("HTTPS server running on port: " + PORT )
+})
 
 var ws_server = new WebSocketServer({
     httpServer : http_server ,
 })
 
+http_server.on("connection",function(socket){
+    let address = socket.address()
+    console.log("Alguem tentou entrar: " , address.address +":"+ address.port )
+})
 
 var connections_by_room = new Map() // Map <string,connection array>
 var all_connections = new Map() // Map<id,connection>

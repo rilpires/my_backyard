@@ -1,6 +1,6 @@
 extends Node
 
-const DEFAULT_PORT = 80
+const DEFAULT_PORT = 443
 
 signal connection_failed
 signal connection_succeeded
