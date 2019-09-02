@@ -12,7 +12,7 @@ const options = {
     "cert" : fs.readFileSync('node_server/domain-crt.txt') ,
 }
 
-app.use(  express.static("/docs", {dotfiles:'allow'}) )
+app.use(  express.static("./docs") )
 var http_server = http.createServer( options , app )
 
 http_server.listen( PORT , "0.0.0.0" , function(){
