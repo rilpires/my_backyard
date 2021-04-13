@@ -8,4 +8,4 @@ The server is by no means scalable, it is just around 100 lines of simple javasc
 
 [I wrote a post about it on my blog](https://rilpires.github.io/games/mybackyard.html)
 
-![preview](https://rilpires.github.io/assets/images/mybackyard/mybackyard.gif)
+![preview](/mybackyard.gif)
