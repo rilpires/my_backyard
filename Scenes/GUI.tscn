@@ -55,17 +55,17 @@ func _ready():
 func _timeout():
 	var my_state = GameContext.my_player_state
 	for child in get_children():
-		if ([\"UpdateTimer\",\"Title\",\"gap\",String(my_state.server_id)].find(child.name) != -1):
+		if ([\"UpdateTimer\",\"Title\",\"gap\",str(my_state.server_id)].find(child.name) != -1):
 			continue 
 		var server_id = int(child.name)
 		if( not NetworkSystem.connected_players.has(server_id) ):
 			child.queue_free()
 	
 	for player_state in NetworkSystem.connected_players.values() + [my_state]:
-		if( not has_node(String(player_state.server_id)) ):
+		if( not has_node(str(player_state.server_id)) ):
 			var new_inst = LabelBox.instance()
 			new_inst.text = player_state.name
-			new_inst.name = String(player_state.server_id)
+			new_inst.name = str(player_state.server_id)
 			new_inst.text_color = player_state.color
 			add_child(new_inst)"
 

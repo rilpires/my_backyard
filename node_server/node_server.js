@@ -1,26 +1,24 @@
-
-const PORT = 8080
-
+const APP_PORT = 8080
 var express = require("express")
 var app = express()
-var WebSocketServer = require('websocket').server;
+var WebSocket = require('ws');
 var http = require('http')
 var fs = require('fs')
 
+app.use(  express.static("docs") )
+var http_server = http.createServer( {'http1.1':true}, app )
 
-app.use(  express.static("./docs") )
-var http_server = http.createServer( app )
-
-http_server.listen( PORT , "0.0.0.0" , function(){
-    console.log("HTTP server running on port: " + PORT )
+http_server.listen( APP_PORT , function(){
+    console.log("HTTP server running on port: " + APP_PORT )
 })
 
-var ws_server = new WebSocketServer({
-    httpServer : http_server ,
+var ws_server = new WebSocket.Server({
+    server: http_server,
 })
 
 http_server.on("connection",function(socket){
     let address = socket.address()
+    console.log("Someone is trying to reach from: " , address.address +":"+ address.port )
 })
 
 var connections_by_room = new Map() // Map <string,connection array>
@@ -31,7 +29,7 @@ let open_unique_id = 1000
 
 ws_server.on("request",function(request){
     var connection = request.accept( null , request.origin )
-    console.log("someone connected from: " , connection.remoteAddress , " , server_id: " , open_unique_id )
+    console.log("Someone connected from: " , connection.remoteAddress , " , server_id: " , open_unique_id )
     connection.sendUTF( "id:"+String(open_unique_id) )
     connection.server_id = open_unique_id
     connection.room = undefined
@@ -78,7 +76,7 @@ ws_server.on("request",function(request){
     })
 
     connection.on("close",function(code,desc){
-        console.log("someone closed connection. code: " + code + " , desc: " + desc );
+        console.log("Someone closed connection. code: " + code + " , desc: " + desc );
         let room_name = connection.room
         if( room_name ){
             let connections_in_this_room = connections_by_room.get(room_name)

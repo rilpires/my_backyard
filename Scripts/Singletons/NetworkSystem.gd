@@ -34,7 +34,7 @@ func _physics_process(delta):
 				var received_id = int(string_from_server)
 				GameContext.my_player_state.server_id = received_id
 				if( GameContext.my_player_state.name.length() == 0 ):
-					GameContext.my_player_state.name = "Player_" + String(received_id)
+					GameContext.my_player_state.name = "Player_" + str(received_id)
 				print("My server_id: " , received_id )
 			
 			elif( string_from_server.substr(0,3) == "dc:" ):

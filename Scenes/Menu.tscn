@@ -106,7 +106,7 @@ func _on_Timer_timeout():
 				[ new_inst ]
 			)
 		
-		$List.get_node(room_name).text = room_name + \" (\"+ String(NetworkSystem.room_list[room_name])  +\"/\"+ String(10) +\")\"
+		$List.get_node(room_name).text = room_name + \" (\"+ str(NetworkSystem.room_list[room_name])  +\"/\"+ str(10) +\")\"
 "
 
 [sub_resource type="GDScript" id=8]
@@ -134,7 +134,6 @@ expand = true
 stretch_mode = 2
 
 [node name="ConnectionSetup" type="NinePatchRect" parent="."]
-editor/display_folded = true
 margin_right = 390.0
 margin_bottom = 164.0
 texture = ExtResource( 1 )
@@ -153,7 +152,6 @@ anchor_bottom = 1.0
 color = Color( 0.160784, 0.160784, 0.160784, 1 )
 
 [node name="YourName" type="LineEdit" parent="ConnectionSetup"]
-editor/display_folded = true
 margin_left = 88.0
 margin_top = 28.0
 margin_right = 370.0
@@ -170,7 +168,6 @@ margin_bottom = 7.0
 text = "Your name:"
 
 [node name="RoomName" type="LineEdit" parent="ConnectionSetup"]
-editor/display_folded = true
 margin_left = 150.0
 margin_top = 95.0
 margin_right = 370.0
@@ -186,7 +183,6 @@ margin_bottom = 7.0
 text = "Room to join/create:"
 
 [node name="FavoriteColor" type="ColorPickerButton" parent="ConnectionSetup"]
-editor/display_folded = true
 margin_left = 150.0
 margin_top = 60.0
 margin_right = 190.0
@@ -212,7 +208,6 @@ text = "Just let me in please"
 script = SubResource( 6 )
 
 [node name="ExistantRooms" type="NinePatchRect" parent="."]
-editor/display_folded = true
 margin_left = 410.0
 margin_top = 20.0
 margin_right = 620.0
@@ -269,6 +264,7 @@ margin_right = 220.0
 margin_bottom = 20.0
 text = "Go"
 script = SubResource( 8 )
+
 [connection signal="text_changed" from="ConnectionSetup/YourName" to="ConnectionSetup/YourName" method="_on_YourName_text_changed"]
 [connection signal="color_changed" from="ConnectionSetup/FavoriteColor" to="ConnectionSetup/FavoriteColor" method="_on_FavoriteColor_color_changed"]
 [connection signal="timeout" from="ExistantRooms/Timer" to="ExistantRooms" method="_on_Timer_timeout"]

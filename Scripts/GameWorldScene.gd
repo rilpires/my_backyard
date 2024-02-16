@@ -32,9 +32,9 @@ func sendMyState():
 func updateOtherPlayers():
 	var other_players_parent = $OtherPlayers
 	for player_state in NetworkSystem.connected_players.values():
-		if( !other_players_parent.has_node( String(player_state.server_id) ) ):
+		if( !other_players_parent.has_node( str(player_state.server_id) ) ):
 			var new_inst = load("res://Scenes/Character.tscn").instance()
-			new_inst.name = String(player_state.server_id)
+			new_inst.name = str(player_state.server_id)
 			new_inst.set_script( load("res://Scripts/PeerPlayerController.gd") )
 			new_inst.my_state = player_state
 			other_players_parent.add_child( new_inst )

@@ -13,7 +13,7 @@ func _input(event):
 	event is InputEventKey) ):
 		var mouse_position = get_viewport().get_local_mouse_position()
 		var direct_space_state = camera.get_world().direct_space_state
-		var from = camera.project_position( mouse_position )
+		var from = camera.project_position( mouse_position, 1 )
 		var ray_direction = camera.project_ray_normal( mouse_position ).normalized()
 		var to = from + ray_direction*100
 		var result = direct_space_state.intersect_ray( from , to , [] , 1 + 1024 + 2048 , true , false )
