@@ -1,11 +1,12 @@
 # my_backyard
 
-Social game made in Godot Engine + Node.js
+A very simple chat-game made in Godot Engine (exporting with WebAssembly) with a very minimal Nodejs websocket server (and static serving of the game files).
 
-It was just an experiment, nothing too fancy.
-You can't create/join room without connecting to the Node.js server included in `/node_server` folder.
-The server is by no means scalable, it is just around 100 lines of simple javascript, and I don't even know javascript!
+The server is by no means scalable, it is just around 100 lines of simple javascript, and I didn't even know javascript at that time!
 
-[I wrote a post about it on my blog](https://rilpires.github.io/games/mybackyard.html)
+I'm currently hosting it on mybackyard.rilpires.com
+
+There is a Dockerfile, but you need to build the godot project outside from it first (because godot cli build command wasn't stable enough in 3.x versions)
 
 ![preview](/mybackyard.gif)
+[I wrote a post about it on my blog](https://rilpires.github.io/games/mybackyard.html)

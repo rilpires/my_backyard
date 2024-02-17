@@ -1,44 +1,48 @@
-const APP_PORT = 8080
+const APP_PORT = process.env.APP_PORT || 8000
 var express = require("express")
 var app = express()
-var WebSocket = require('ws');
+var WebSocket = require('ws').WebSocketServer;
 var http = require('http')
-var fs = require('fs')
 
-app.use(  express.static("docs") )
-var http_server = http.createServer( {'http1.1':true}, app )
-
-http_server.listen( APP_PORT , function(){
-    console.log("HTTP server running on port: " + APP_PORT )
-})
-
-var ws_server = new WebSocket.Server({
-    server: http_server,
-})
-
-http_server.on("connection",function(socket){
-    let address = socket.address()
-    console.log("Someone is trying to reach from: " , address.address +":"+ address.port )
-})
 
 var connections_by_room = new Map() // Map <string,connection array>
 var all_connections = new Map() // Map<id,connection>
 connections_by_room.clear()
 
+app.use(  express.static("dist") )
+
+var http_server = http.createServer( {'http1.1':true}, app )
+
+let ws_server = new WebSocket({ server: http_server})
+
+
+http_server.on("connection",function(socket){
+    let address = socket.address()
+    console.log("HTTP: Someone is trying to reach from: " , address.address +":"+ address.port )
+})
+
 let open_unique_id = 1000
 
-ws_server.on("request",function(request){
-    var connection = request.accept( null , request.origin )
-    console.log("Someone connected from: " , connection.remoteAddress , " , server_id: " , open_unique_id )
-    connection.sendUTF( "id:"+String(open_unique_id) )
+http_server.on("upgrade",function(request,socket,head){
+    console.log("Someone is trying to upgrade the connection..."
+        , request.headers.origin
+        , request.headers.host
+        , request.headers.upgrade
+        , request.headers.connection
+    );
+});
+
+ws_server.on("connection", function(connection){
+    console.log(connection)
+    connection.send( "id:"+String(open_unique_id) )
     connection.server_id = open_unique_id
     connection.room = undefined
     all_connections.set( connection.server_id , connection )
     open_unique_id++
 
     connection.on("message",function( msg ){
-
-        if( msg.type == "utf8" ){
+        const isUtf8 = msg[0] != 18;
+        if( isUtf8 ){
             // console.log("Message received, type: utf8 , size: " , msg.utf8Data.length )
             // console.log( msg.utf8Data  )
         }
@@ -47,8 +51,8 @@ ws_server.on("request",function(request){
         }
         
         // If Text message, it is room's name
-        if( msg.type == "utf8" ){
-            let room_name = msg.utf8Data
+        if( isUtf8 ){
+            let room_name = String(msg)
             connection.room = room_name
             if( !connections_by_room.has(room_name) ){
                 connections_by_room.set(room_name, new Map() )
@@ -66,7 +70,7 @@ ws_server.on("request",function(request){
                 let connections_this_room = connections_by_room.get(room_name)
                 connections_this_room.forEach( function(conn, conn_id ,map){
                     if( conn.server_id != connection.server_id ){
-                        conn.sendBytes( msg.binaryData )
+                        conn.send( msg )
                     }
                 })
             } else {
@@ -82,7 +86,7 @@ ws_server.on("request",function(request){
             let connections_in_this_room = connections_by_room.get(room_name)
             connections_in_this_room.delete( connection.server_id )
             connections_in_this_room.forEach(function(conn,index,array){
-                conn.sendUTF( "dc:"+connection.server_id )
+                conn.send( "dc:"+connection.server_id )
             })
             console.log("and was kicked off from " , room_name )
         }
@@ -96,19 +100,26 @@ ws_server.on("request",function(request){
 setInterval( function(){
     connections_by_room.forEach(function(value,key,map){
         if(value.size==0){
+            console.log("Room " + key + " is empty. Deleting it...")
             connections_by_room.delete(key)
         }
     })
-
+    
     let packet = {}
     connections_by_room.forEach(function(value,key,map){
         packet[key] = value.size
     })
+    
     packet = JSON.stringify(packet)
+    
     all_connections.forEach(function(value,key,map){
         if( value.room === undefined ){
-            value.sendUTF( "rooms:" + packet )
+            value.send( "rooms:" + packet )
         }
     })
 
 } , 900 )
+
+http_server.listen( APP_PORT , function(){
+    console.log("Server is listening on port: " , APP_PORT )
+});

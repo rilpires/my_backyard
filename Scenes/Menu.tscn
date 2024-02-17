@@ -114,10 +114,10 @@ script/source = "extends Button
 
 func _on_Button_pressed():
 	var peer = NetworkSystem.my_peer
-	
 	var url = get_parent().text
-	print(\"connecting to \" , url , \": \" , peer.connect_to_url(url) )
-	NetworkSystem.setupMyPeer( peer )"
+	peer.connect_to_url(url)
+	NetworkSystem.setupMyPeer( peer )
+"
 
 [node name="Menu" type="Control"]
 anchor_right = 1.0
@@ -256,7 +256,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -24.0
 margin_right = 160.0
-text = "ws://127.0.0.1:80"
+text = "ws://127.0.0.1:8000"
 
 [node name="Button" type="Button" parent="server_address"]
 margin_left = 170.0

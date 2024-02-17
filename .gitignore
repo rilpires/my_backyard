@@ -9,6 +9,6 @@ export/
 # Mono-specific ignores
 .mono/
 
-#-------------
 *.blend1
 node_server/node_modules
+.vscode
