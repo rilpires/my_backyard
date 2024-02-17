@@ -9,4 +9,5 @@ I'm currently hosting it [here](https://mybackyard.rilpires.com)
 There is a Dockerfile, but you need to build the godot project outside from it first (because godot cli build command wasn't stable enough in 3.x versions)
 
 ![preview](/mybackyard.gif)
+
 [I wrote a post about it on my blog](https://rilpires.github.io/games/mybackyard.html)
